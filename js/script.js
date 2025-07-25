@@ -390,6 +390,29 @@ function handleItems() {
         if (it.y > canvas.height) {
             items.splice(i, 1);
         }
+
+        // 弾丸との衝突判定
+        for (let j = bullets.length - 1; j >= 0; j--) {
+            const b = bullets[j];
+            if (
+                b.x < it.x + it.width &&
+                b.x + b.width > it.x &&
+                b.y < it.y + it.height &&
+                b.y + b.height > it.y
+            ) {
+                if (it.type === 'heal') { // 回復アイテムに弾が当たった場合
+                    if (!isInvincible) {
+                        playerHp -= 10; // ダメージを与える
+                    }
+                    if (playerHp <= 0) {
+                        gameOver = true;
+                    }
+                }
+                bullets.splice(j, 1); // 弾丸を削除
+                items.splice(i, 1); // アイテムを削除
+                break; // 次のアイテムへ
+            }
+        }
     }
 }
 
