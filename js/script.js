@@ -68,10 +68,10 @@ playerImage.src = 'images/cha-ko.png'; // Set player image
 
 // Player
 const player = {
-    x: canvas.width / 2 - 50, // 100 / 2 = 50
+    x: canvas.width / 2 - 25, // 50 / 2 = 25
     y: canvas.height - 90,
-    width: 100,
-    height: 75,
+    width: 50,
+    height: 37.5,
     speed: 5
 };
 
@@ -80,7 +80,7 @@ function drawPlayer() {
         // 無敵中は点滅させる
         return;
     }
-    ctx.drawImage(playerImage, player.x, player.y, player.width, player.height);
+    ctx.drawImage(playerImage, player.x - player.width / 2, player.y - player.height / 2, player.width * 2, player.height * 2);
 }
 
 // Bullets
@@ -198,6 +198,8 @@ const keys = {
     left: false
 };
 
+let touchX = null; // タッチ操作用のX座標
+
 document.addEventListener('keydown', (e) => {
     if (e.key === 'ArrowRight') {
         keys.right = true;
@@ -240,12 +242,59 @@ document.addEventListener('keyup', (e) => {
     }
 });
 
+// タッチイベントリスナー
+canvas.addEventListener('touchstart', (e) => {
+    e.preventDefault(); // デフォルトのスクロール動作などを防止
+    if (gameOver) return; // ゲームオーバー中は操作しない
+
+    const touch = e.touches[0];
+    touchX = touch.clientX - canvas.getBoundingClientRect().left;
+
+    if (!gameStarted) {
+        gameStarted = true;
+        storyTextElement.style.display = 'none';
+        try {
+            gameBGM.play();
+        } catch (error) {
+            console.error("BGM playback failed:", error);
+        }
+        requestAnimationFrame(gameLoop);
+    } else if (storyMode) {
+        proceedStory();
+    }
+});
+
+canvas.addEventListener('touchmove', (e) => {
+    e.preventDefault();
+    if (gameOver) return;
+
+    const touch = e.touches[0];
+    touchX = touch.clientX - canvas.getBoundingClientRect().left;
+});
+
+canvas.addEventListener('touchend', (e) => {
+    e.preventDefault();
+    touchX = null; // タッチ終了で移動を停止
+});
+
 function updatePlayerPosition() {
     if (keys.right && player.x < canvas.width - player.width) {
         player.x += player.speed;
-    }
-    if (keys.left && player.x > 0) {
+    } else if (keys.left && player.x > 0) {
         player.x -= player.speed;
+    }
+
+    // タッチ操作による移動
+    if (touchX !== null) {
+        const playerCenter = player.x + player.width / 2;
+        if (touchX < playerCenter - 10) { // 左に移動
+            player.x -= player.speed;
+        } else if (touchX > playerCenter + 10) { // 右に移動
+            player.x += player.speed;
+        }
+        // 画面端での制限
+        if (player.x < 0) player.x = 0;
+        if (player.x > canvas.width - player.width) player.x = canvas.width - player.width;
     }
 }
 
@@ -461,12 +510,6 @@ function handleEnemies() {
 
         // Game over if enemy reaches bottom
         if (e.y > canvas.height) {
-            if (!isInvincible) {
-                playerHp -= 10; // 画面外に出た敵によるダメージ
-            }
-            if (playerHp <= 0) {
-                gameOver = true;
-            }
             enemies.splice(i, 1); // 画面外に出た敵は削除
             continue; // 次の敵へ
         }
@@ -830,6 +873,7 @@ function drawStartScreen() {
 }
 
 let lastSpawnTime = 0;
+let lastShotTimeTouch = 0; // タッチ操作による発射時間
 function gameLoop(timestamp) {
     if (!gameStarted || gameOver || storyMode) {
         if (gameOver) {
@@ -898,6 +942,19 @@ function gameLoop(timestamp) {
     // 無敵時間の管理
     if (isInvincible && Date.now() - invincibleStartTime > invincibleItem.duration) {
         isInvincible = false;
+    }
+
+    // タッチ操作による連続発射
+    if (touchX !== null && Date.now() - lastShotTimeTouch > 100) { // 100msごとに発射
+        bullets.push({
+            x: player.x + player.width / 2 - bullet.width / 2,
+            y: player.y,
+            width: bullet.width,
+            height: bullet.height,
+            color: bullet.color,
+            speed: bullet.speed
+        });
+        lastShotTimeTouch = Date.now();
     }
 
     requestAnimationFrame(gameLoop);
