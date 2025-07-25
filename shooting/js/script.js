@@ -4,7 +4,7 @@ const ctx = canvas.getContext('2d');
 const storyTextElement = document.getElementById('storyText');
 
 let score = 0;
-let playerHp = 10000; // プレイヤーの体力
+let playerHp = 100; // プレイヤーの体力
 let gameOver = false;
 let gameClear = false; // Game clear flag
 let gameStarted = false; // Game state flag
@@ -16,56 +16,55 @@ let currentBossStory = [];
 const bossStories = [
     // Douzi
     [
-        "ドゥージを倒した！",
+        "どーじを倒した！",
         "しかし、まだ終わりではない…",
-        "次の敵が迫っている！"
+        "モンスターたちは、まだこの島にいる！"
     ],
     // Gocho
     [
-        "ごちょを倒した！",
+        "伍長を倒した！",
         "奴は四天王の中でも最弱…",
-        "次なる強敵が待ち受ける！"
+        "人の尻ばかり拭いてるから！"
     ],
     // Ariesu
     [
-        "アリエスを倒した！",
+        "アーリエスを倒した！",
         "奴の攻撃は苛烈だったが、なんとか凌いだ…",
         "まだ見ぬ強敵が、この先にいるのか…"
     ],
     // Yuki
     [
         "ゆきを倒した！",
-        "雪のように冷たい攻撃だった…",
-        "だが、ワイちゃんの熱い魂は燃え尽きない！"
+        "ごめんね、ゆきちゃん…",
+        "ワイちゃんのためなの…"
     ],
     // Maruhachi
     [
         "まるはちを倒した！",
-        "奴の波状攻撃は厄介だったが、見事打ち破った！",
+        "解釈が合わなかったから仕方ない",
         "残る敵はあとわずか…"
     ],
     // Yamori
     [
         "やもりを倒した！",
-        "奴の螺旋弾は予測不能だったが、ワイちゃんの動体視力は伊達じゃない！",
+        "破壊神の名に恥じない強さだった…",
         "いよいよ、最後の戦いが近づいている…"
     ],
     // Cell (Last Boss)
     [
-        "セルを倒した！",
+        "CELLを倒した！",
         "ついに、この島の全てのモンスターを退治した！",
-        "ワイちゃん、やったね！",
-        "そして、お誕生日おめでとう！"
+        "ワイちゃん、やったね！"
     ]
 ];
 
 // BGM
-const gameBGM = new Audio('mylife.mp3');
+const gameBGM = new Audio('audio/mylife.mp3');
 gameBGM.loop = true; // ループ再生
 
 // Player Image
 const playerImage = new Image();
-playerImage.src = 'cha-ko.png'; // Set player image
+playerImage.src = 'images/cha-ko.png'; // Set player image
 
 // Player
 const player = {
@@ -95,7 +94,7 @@ const bullet = {
 
 // Enemy Image
 const enemyImage = new Image();
-enemyImage.src = 'sparrow.png';
+enemyImage.src = 'images/sparrow.png';
 
 // Bosses Data
 const bossesData = [
@@ -112,13 +111,13 @@ let currentBossIndex = 0;
 let currentBossData = bossesData[currentBossIndex];
 
 // Boss Images
-const bossImageDouzi = new Image(); bossImageDouzi.src = 'douzi.png';
-const bossImageGocho = new Image(); bossImageGocho.src = 'gocho.png';
-const bossImageAriesu = new Image(); bossImageAriesu.src = 'ariesu.png';
-const bossImageYuki = new Image(); bossImageYuki.src = 'yuki.png';
-const bossImageYamori = new Image(); bossImageYamori.src = 'yamori.png';
-const bossImageMaruhachi = new Image(); bossImageMaruhachi.src = 'maruhachi.png';
-const bossImageCell = new Image(); bossImageCell.src = 'cell.png';
+const bossImageDouzi = new Image(); bossImageDouzi.src = 'images/douzi.png';
+const bossImageGocho = new Image(); bossImageGocho.src = 'images/gocho.png';
+const bossImageAriesu = new Image(); bossImageAriesu.src = 'images/ariesu.png';
+const bossImageYuki = new Image(); bossImageYuki.src = 'images/yuki.png';
+const bossImageYamori = new Image(); bossImageYamori.src = 'images/yamori.png';
+const bossImageMaruhachi = new Image(); bossImageMaruhachi.src = 'images/maruhachi.png';
+const bossImageCell = new Image(); bossImageCell.src = 'images/cell.png';
 
 // Boss
 const boss = {
@@ -166,7 +165,7 @@ const enemyBullet = {
 
 // Item Image
 const itemImage = new Image();
-itemImage.src = 'item.png'; // アイテム画像
+itemImage.src = 'images/item.png'; // アイテム画像
 
 // Items
 const items = [];
@@ -182,7 +181,7 @@ let enemySpawnInterval = 1000; // ms
 
 // Invincible Item Image
 const invincibleItemImage = new Image();
-invincibleItemImage.src = 'nanao.png'; // 無敵アイテム画像
+invincibleItemImage.src = 'images/nanao.png'; // 無敵アイテム画像
 
 // Invincible Item
 const invincibleItem = {
@@ -768,7 +767,7 @@ function drawGameOver() {
 
 function resetGame() {
     score = 0;
-    playerHp = 10000; // プレイヤーの体力を10000に初期化
+    playerHp = 100; // プレイヤーの体力を100に初期化
     gameOver = false;
     gameClear = false;
     gameBGM.pause(); // BGM停止
