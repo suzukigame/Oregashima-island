@@ -1,6 +1,14 @@
 console.log("script.js: Script execution started.");
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
+
+// ゲームの論理的なサイズを定義
+const GAME_WIDTH = 480;
+const GAME_HEIGHT = 640;
+
+canvas.width = GAME_WIDTH;
+canvas.height = GAME_HEIGHT;
+
 const storyTextElement = document.getElementById('storyText');
 
 let score = 0;

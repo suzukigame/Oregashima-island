@@ -11,4 +11,9 @@ body {
 canvas {
     background-color: #000;
     border: 1px solid #ccc;
+    width: 100vw; /* 画面幅いっぱいに */
+    height: 100vh; /* 画面高さいっぱいに */
+    max-width: 480px; /* 最大幅を設定（元のゲームの縦横比を維持するため） */
+    max-height: 640px; /* 最大高さを設定 */
+    object-fit: contain; /* アスペクト比を維持しつつ、要素内に収める */
 }
